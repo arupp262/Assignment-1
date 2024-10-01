@@ -1,0 +1,36 @@
+class StackNode {
+    String data;
+    StackNode next;
+
+    public StackNode(String data) {
+        this.data = data;
+        this.next = null;
+    }
+}
+
+class Stack {
+    private StackNode top;
+
+    public Stack() {
+        this.top = null;
+    }
+
+    public boolean isEmpty() {
+        return top == null;
+    }
+
+    public void push(String data) {
+        StackNode newNode = new StackNode(data);
+        newNode.next = top;
+        top = newNode;
+    }
+
+    public String pop() {
+        if (isEmpty()) {
+            return null;
+        }
+        String data = top.data;
+        top = top.next;
+        return data;
+    }
+}
