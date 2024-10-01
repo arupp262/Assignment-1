@@ -1,0 +1,85 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+class LogAnalyzer {
+    private Queue queue;
+    private Stack errorStack;
+    private HashMap<String, Integer> logLevelCount;
+    private List<String> recentErrors;
+    private int memoryWarningCount;
+
+    public LogAnalyzer() {
+        this.queue = new Queue();
+        this.errorStack = new Stack();
+        this.logLevelCount = new HashMap<>();
+        this.recentErrors = new ArrayList<>();
+        this.memoryWarningCount = 0;
+        
+        // Initialize log level count map
+        logLevelCount.put("INFO", 0);
+        logLevelCount.put("WARN", 0);
+        logLevelCount.put("ERROR", 0);
+    }
+
+    public void processLogEntry(String logEntry) {
+        // Enqueue the log entry into the queue
+        queue.enqueue(logEntry);
+    }
+
+    public void analyzeLogs() {
+        // Process each log entry in the queue
+        while (!queue.isEmpty()) {
+            String logEntry = queue.dequeue();
+
+            // Extract log level from the entry
+            String logLevel = getLogLevel(logEntry);
+
+            // Count log level
+            if (logLevel != null) {
+                logLevelCount.put(logLevel, logLevelCount.get(logLevel) + 1);
+            }
+
+            // Handle ERROR log entries
+            if ("ERROR".equals(logLevel)) {
+                // Push to the stack
+                errorStack.push(logEntry);
+                
+                // Keep track of last 100 error entries
+                if (recentErrors.size() >= 100) {
+                    recentErrors.remove(0);
+                }
+                recentErrors.add(logEntry);
+            }
+
+            // Handle Memory Warnings
+            if ("WARN".equals(logLevel) && logEntry.contains("Memory")) {
+                memoryWarningCount++;
+            }
+        }
+    }
+
+    // Extracts log level from the log entry
+    private String getLogLevel(String logEntry) {
+        if (logEntry.contains("INFO")) {
+            return "INFO";
+        } else if (logEntry.contains("ERROR")) {
+            return "ERROR";
+        } else if (logEntry.contains("WARN")) {
+            return "WARN";
+        }
+        return null;
+    }
+
+    public HashMap<String, Integer> getLogLevelCount() {
+        return logLevelCount;
+    }
+
+    public List<String> getRecentErrors() {
+        return recentErrors;
+    }
+
+    public int getMemoryWarningCount() {
+        return memoryWarningCount;
+    }
+}
