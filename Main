@@ -1,22 +1,29 @@
-import java.util.Arrays;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         LogAnalyzer logAnalyzer = new LogAnalyzer();
+        ArrayList<String> logEntries = new ArrayList<String>();
 
-        // Example log entries
-        String[] logEntries = {
-            "[2024-08-23 14:35:21] INFO User123 logged in",
-            "[2024-08-23 14:35:22] ERROR Database connection failed",
-            "[2024-08-23 14:35:23] WARN Memory usage at 85%",
-            "[2024-08-23 14:35:24] ERROR File not found",
-            "[2024-08-23 14:35:25] WARN Disk usage at 90%",
-            "[2024-08-23 14:35:26] INFO User456 logged out"
-            // Add more log entries as needed
-        };
+        try {
+
+            File file = new File("log-data.csv");
+            Scanner scan = new Scanner(file);
+            while (scan.hasNextLine()) {
+                logEntries.add(scan.nextLine());
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+
 
         // Process each log entry
-        Arrays.stream(logEntries).forEach(logAnalyzer::processLogEntry);
+        logEntries.forEach(logAnalyzer::processLogEntry);
 
         // Analyze the logs
         logAnalyzer.analyzeLogs();
